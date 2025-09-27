@@ -24,17 +24,39 @@ class _FileManagerScreenState extends State<FileManagerScreen> {
     }
   }
 
-  void loadFiles() {
+  Future<void> loadFiles() async {
     Directory root = Directory("/storage/emulated/0");
+    List<FileSystemEntity> temp = [];
+
+    // Helper function for safe recursive scan
+    void scanDir(Directory dir) {
+      try {
+        final entities = dir.listSync(followLinks: false);
+        for (var entity in entities) {
+          final name = entity.path.split('/').last;
+
+          // Skip hidden and restricted folders
+          if (name.startsWith(".") || entity.path.contains("/Android/")) continue;
+
+          temp.add(entity);
+
+          // If it's a folder, scan it recursively
+          if (entity is Directory) {
+            scanDir(entity);
+          }
+        }
+      } catch (e) {
+        print("Skipping folder ${dir.path} due to error: $e");
+      }
+    }
+
+    scanDir(root);
 
     setState(() {
-      allFiles = root.listSync(recursive: false, followLinks: false)
-          .where((f) {
-        String name = f.path.split('/').last;
-        return name != "Android"; // skip restricted folder
-      }).toList();
+      allFiles = temp;
     });
   }
+
 
   /// Classify file types
   String getFileType(String path) {
@@ -64,6 +86,43 @@ class _FileManagerScreenState extends State<FileManagerScreen> {
     return [];
   }
 
+  IconData getFileIcon(FileSystemEntity file) {
+    if (file is Directory) return Icons.folder;
+
+    String type = getFileType(file.path);
+    switch (type) {
+      case "Image":
+        return Icons.image;
+      case "Video":
+        return Icons.video_library;
+      case "Audio":
+        return Icons.audiotrack;
+      case "Document":
+        return Icons.description;
+      default:
+        return Icons.insert_drive_file;
+    }
+  }
+
+  Color getFileIconColor(FileSystemEntity file) {
+    if (file is Directory) return Colors.amber;
+
+    String type = getFileType(file.path);
+    switch (type) {
+      case "Image":
+        return Colors.purple;
+      case "Video":
+        return Colors.red;
+      case "Audio":
+        return Colors.blue;
+      case "Document":
+        return Colors.green;
+      default:
+        return Colors.grey;
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     List<FileSystemEntity> files = getFilteredFiles();
@@ -81,10 +140,14 @@ class _FileManagerScreenState extends State<FileManagerScreen> {
           var file = files[index];
           bool isDir = file is Directory;
           return ListTile(
-            leading: Icon(isDir ? Icons.folder : Icons.insert_drive_file,
-                color: isDir ? Colors.amber : Colors.grey),
+            leading: Icon(
+              getFileIcon(file),
+              color: getFileIconColor(file),
+            ),
             title: Text(file.path.split('/').last),
-            subtitle: isDir ? Text("Folder") : Text(getFileType(file.path)),
+            subtitle: file is Directory
+                ? Text("Folder")
+                : Text(getFileType(file.path)),
             onTap: () {
               if (file is File) {
                 OpenFilex.open(file.path); // open file
