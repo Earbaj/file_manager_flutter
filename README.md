@@ -45,5 +45,48 @@ git clone https://github.com/yourusername/flutter-file-manager.git
 2. **Navigate to the project directory:**
 
 ```bash
-git clone https://github.com/yourusername/flutter-file-manager.git
+cd flutter-file-manager
 ```
+3. **Install dependencies:**
+
+```bash
+flutter pub get
+```
+
+4. **Run the app:**
+
+```bash
+flutter run
+```
+
+## Permissions
+The app requires storage permission to read device files. On Android 10+, it uses scoped storage, and restricted folders like /Android/data will be ignored automatically.
+
+Add the following permissions in **AndroidManifest.xml:**
+
+```bash
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+```
+
+## Usage
+
+1. Launch the app.
+2. Browse the internal storage starting from /storage/emulated/0.
+3. Tap on folders to navigate inside them.
+4. Tap on files to open them.
+5. Use the bottom navigation bar to filter files by type.
+6. Press the device back button to go up one folder.
+
+
+## Notes
+
+- The app ignores system folders and hidden files, so some PDFs or files in /Android/data may not appear.
+- Works on Android devices. iOS is not supported due to restricted file system access.
+- Files in Download, Documents, or any user-created folder will always appear.
+
+## Packages Used
+
+- permission_handler To request storage permissions
+
+- open_filex To open files with the default app
