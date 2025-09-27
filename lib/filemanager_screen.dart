@@ -337,7 +337,6 @@ class _FileManagerScreenState extends State<FileManagerScreen> {
       ),
       body: _buildBody(files),
       bottomNavigationBar: _buildBottomNavigationBar(),
-      floatingActionButton: selectedIndex == 0 ? _buildFloatingActionButton() : null,
     );
   }
 
@@ -538,14 +537,6 @@ class _FileManagerScreenState extends State<FileManagerScreen> {
     );
   }
 
-  Widget _buildFloatingActionButton() {
-    return FloatingActionButton(
-      onPressed: () => loadFiles(Directory("/storage/emulated/0/Download")),
-      child: Icon(Icons.download),
-      tooltip: "Go to Downloads",
-      backgroundColor: Colors.green,
-    );
-  }
 
   Widget _buildQuickAccessMenu() {
     return PopupMenuButton(
