@@ -41,3 +41,9 @@ _Add screenshots of your app here (optional)_
 
 ```bash
 git clone https://github.com/yourusername/flutter-file-manager.git
+```
+2. **Navigate to the project directory:**
+
+```bash
+git clone https://github.com/yourusername/flutter-file-manager.git
+```
